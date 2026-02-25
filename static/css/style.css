@@ -42,7 +42,7 @@ body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--
 .dice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .d-btn { border: none; border-radius: 6px; padding: 14px 0; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
 .btn-d4 { background: #3fb950; } .btn-d6 { background: #58a6ff; } .btn-d8 { background: #bc8cff; }
-.btn-d10 { background: #d29922; } .btn-d12 { background: #ff7b72; } .btn-d20 { background: #ffa657; }
+.btn-d10 { background: #00ffff; } .btn-d12 { background: #ff7b72; } .btn-d20 { background: #ffa657; }
 
 .input-area { padding: 20px; background: var(--panel); border-top: 1px solid #30363d; display: flex; gap: 10px; }
 .input-area input { flex-grow: 1; background: #0d1117; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; outline: none; }
