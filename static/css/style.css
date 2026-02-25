@@ -1,0 +1,54 @@
+:root { 
+    --bg: #0d1117; --panel: #161b22; --text: #c9d1d9; --accent: #58a6ff; 
+    --crit: #bc8cff; --fail: #ff4d4d; 
+}
+
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow: hidden; height: 100vh; }
+
+#setup { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.login-box { background: var(--panel); padding: 30px; border-radius: 12px; border: 1px solid #30363d; width: 320px; text-align: center; }
+.login-box input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; box-sizing: border-box; outline: none; }
+.login-box button { width: 100%; padding: 12px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+.container { display: flex; width: 100vw; height: 100vh; }
+
+/* INICIATIVA */
+.initiative-panel { width: 260px; background: var(--panel); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; }
+#initiative-list { flex-grow: 1; list-style: none; padding: 0; margin: 15px 0; overflow-y: auto; }
+.init-item { padding: 10px; margin-bottom: 8px; background: #21262d; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid transparent; }
+.init-item.active { border-left-color: var(--accent); background: #30363d; box-shadow: 0 0 15px rgba(88,166,255,0.1); }
+#btn-next-turn { padding:12px; background:var(--accent); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
+
+/* LOG */
+.main-game { flex-grow: 1; display: flex; flex-direction: column; background: #0d1117; }
+#log { flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 12px; }
+.roll-block { background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d; position: relative; }
+.reroll-btn { position: absolute; top: 12px; right: 12px; background: #21262d; color: #8b949e; border: 1px solid #333; border-radius: 4px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer; }
+.total-val { font-size: 2.6rem; font-weight: 900; line-height: 1; margin-right: 10px; }
+.crit-glow { color: var(--crit); text-shadow: 0 0 10px var(--crit); }
+.fail-glow { color: var(--fail); text-shadow: 0 0 10px var(--fail); }
+
+/* SIDEBAR */
+.dice-sidebar { width: 220px; background: var(--panel); border-left: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; gap: 15px; }
+.visual-box { width: 100%; height: 140px; background: #0d1117; border: 1px solid #333; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.v-total { font-size: 3rem; font-weight: bold; color: var(--accent); }
+#v-details { font-size: 0.7rem; color: #555; }
+
+.sidebar-inputs { display: flex; gap: 10px; }
+.input-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.input-group label { font-size: 0.65rem; color: #8b949e; margin-left: 2px; }
+.input-group input { width: 100%; background: #0d1117; border: 1px solid #333; color: white; padding: 8px; border-radius: 4px; box-sizing: border-box; }
+
+.dice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.d-btn { border: none; border-radius: 6px; padding: 14px 0; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.btn-d4 { background: #3fb950; } .btn-d6 { background: #58a6ff; } .btn-d8 { background: #bc8cff; }
+.btn-d10 { background: #d29922; } .btn-d12 { background: #ff7b72; } .btn-d20 { background: #ffa657; }
+
+.input-area { padding: 20px; background: var(--panel); border-top: 1px solid #30363d; display: flex; gap: 10px; }
+.input-area input { flex-grow: 1; background: #0d1117; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; outline: none; }
+#btn-rolar { background: #238636; color: white; border: none; padding: 0 25px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+.init-edit-input { width: 45px; background: rgba(0,0,0,0.3); border: 1px solid #444; color: white; font-weight: bold; text-align: center; border-radius: 4px; padding: 2px; outline: none; font-size: 1.1rem; }
+
+.rolling { animation: shake 0.1s infinite; }
+@keyframes shake { 0% { transform: rotate(1deg); } 50% { transform: rotate(-1deg); } 100% { transform: rotate(1deg); } }

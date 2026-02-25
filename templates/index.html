@@ -4,49 +4,7 @@
     <meta charset="UTF-8">
     <title>RPG Console Master</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <style>
-        :root { 
-            --bg: #0d1117; --panel: #161b22; --text: #c9d1d9; --accent: #58a6ff; 
-            --crit: #bc8cff; --fail: #ff4d4d; 
-        }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow: hidden; height: 100vh; }
-        #setup { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .login-box { background: var(--panel); padding: 30px; border-radius: 12px; border: 1px solid #30363d; width: 320px; text-align: center; }
-        .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; background: #0d1117; border: 1px solid #30363d; color: white; border-radius: 6px; box-sizing: border-box; outline: none; }
-        .login-box button { width: 100%; padding: 12px; background: #238636; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .container { display: flex; width: 100vw; height: 100vh; }
-
-        .initiative-panel { width: 260px; background: var(--panel); border-right: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; }
-        #initiative-list { flex-grow: 1; list-style: none; padding: 0; margin: 15px 0; overflow-y: auto; }
-        .init-item { padding: 10px; margin-bottom: 8px; background: #21262d; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid transparent; }
-        .init-item.active { border-left-color: var(--accent); background: #30363d; box-shadow: 0 0 15px rgba(88,166,255,0.1); }
-
-        .main-game { flex-grow: 1; display: flex; flex-direction: column; background: #0d1117; }
-        #log { flex-grow: 1; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 12px; }
-        .roll-block { background: #161b22; padding: 15px; border-radius: 10px; border: 1px solid #30363d; position: relative; }
-        .reroll-btn { position: absolute; top: 12px; right: 12px; background: #21262d; color: #8b949e; border: 1px solid #333; border-radius: 4px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer; }
-        .total-val { font-size: 2.6rem; font-weight: 900; line-height: 1; margin-right: 10px; }
-        .crit-glow { color: var(--crit); text-shadow: 0 0 10px var(--crit); }
-        .fail-glow { color: var(--fail); text-shadow: 0 0 10px var(--fail); }
-
-        .dice-sidebar { width: 220px; background: var(--panel); border-left: 1px solid #30363d; display: flex; flex-direction: column; padding: 20px; gap: 15px; }
-        .visual-box { width: 100%; height: 140px; background: #0d1117; border: 1px solid #333; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .v-total { font-size: 3rem; font-weight: bold; color: var(--accent); }
-        .dice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .d-btn { border: none; border-radius: 6px; padding: 14px 0; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .input-area { padding: 20px; background: var(--panel); border-top: 1px solid #30363d; display: flex; gap: 10px; }
-        .input-area input { flex-grow: 1; background: #0d1117; border: 1px solid #30363d; color: white; padding: 15px; border-radius: 8px; outline: none; }
-
-        /* Estilo para o input de edição da iniciativa */
-        .init-edit-input { 
-            width: 45px; background: rgba(0,0,0,0.3); border: 1px solid #444; 
-            color: white; font-weight: bold; text-align: center; border-radius: 4px; 
-            padding: 2px; outline: none; font-size: 1.1rem;
-        }
-
-        .rolling { animation: shake 0.1s infinite; }
-        @keyframes shake { 0% { transform: rotate(1deg); } 50% { transform: rotate(-1deg); } 100% { transform: rotate(1deg); } }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
@@ -63,141 +21,45 @@
     <aside class="initiative-panel">
         <h3 style="text-align:center; font-size:0.7rem; color:#8b949e; letter-spacing:2px;">INICIATIVA</h3>
         <ul id="initiative-list"></ul>
-        <button onclick="socket.emit('next_turn', {room: room})" style="padding:12px; background:var(--accent); color:black; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">PRÓXIMO TURNO</button>
+        <button onclick="socket.emit('next_turn', {room: room})" id="btn-next-turn">PRÓXIMO TURNO</button>
     </aside>
 
     <main class="main-game">
         <div id="log"></div>
         <div class="input-area">
             <input type="text" id="cmd" placeholder="Ex: 1d20+5 iniciativa Orc" onkeypress="if(event.key==='Enter') enviar()">
-            <button onclick="enviar()" style="background:#238636; color:white; border:none; padding:0 25px; border-radius:8px; font-weight:bold; cursor:pointer;">ROLAR</button>
+            <button onclick="enviar()" id="btn-rolar">ROLAR</button>
         </div>
     </main>
 
     <aside class="dice-sidebar">
         <div class="visual-box" id="v-box">
             <div class="v-total" id="v-total">--</div>
-            <div id="v-details" style="font-size:0.7rem; color:#555">Última Soma</div>
+            <div id="v-details">Última Soma</div>
         </div>
         
-        <div style="display:flex; gap:10px;">
-            <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
-                <label style="font-size:0.65rem; color:#8b949e;">Dados</label>
-                <input type="number" id="v-qtd" value="1" min="1" style="width:100%; background:#0d1117; border:1px solid #333; color:white; padding:8px; border-radius:4px; box-sizing:border-box;">
+        <div class="sidebar-inputs">
+            <div class="input-group">
+                <label>Dados</label>
+                <input type="number" id="v-qtd" value="1" min="1">
             </div>
-            <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
-                <label style="font-size:0.65rem; color:#8b949e;">Bônus</label>
-                <input type="number" id="v-bonus" value="0" style="width:100%; background:#0d1117; border:1px solid #333; color:white; padding:8px; border-radius:4px; box-sizing:border-box;">
+            <div class="input-group">
+                <label>Bônus</label>
+                <input type="number" id="v-bonus" value="0">
             </div>
         </div>
 
         <div class="dice-grid">
-            <button class="d-btn" style="background:#3fb950" onclick="vRoll(4)">D4</button>
-            <button class="d-btn" style="background:#58a6ff" onclick="vRoll(6)">D6</button>
-            <button class="d-btn" style="background:#bc8cff" onclick="vRoll(8)">D8</button>
-            <button class="d-btn" style="background:#36ffff" onclick="vRoll(10)">D10</button>
-            <button class="d-btn" style="background:#ff7b72" onclick="vRoll(12)">D12</button>
-            <button class="d-btn" style="background:#ffa657" onclick="vRoll(20)">D20</button>
+            <button class="d-btn btn-d4" onclick="vRoll(4)">D4</button>
+            <button class="d-btn btn-d6" onclick="vRoll(6)">D6</button>
+            <button class="d-btn btn-d8" onclick="vRoll(8)">D8</button>
+            <button class="d-btn btn-d10" onclick="vRoll(10)">D10</button>
+            <button class="d-btn btn-d12" onclick="vRoll(12)">D12</button>
+            <button class="d-btn btn-d20" onclick="vRoll(20)">D20</button>
         </div>
     </aside>
 </div>
 
-<script>
-    var socket = io();
-    var user, room;
-
-    function getPColor(name) {
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        return `hsl(${Math.abs(hash * 137) % 360}, 85%, 65%)`;
-    }
-
-    function entrar() {
-        user = document.getElementById('username').value;
-        room = document.getElementById('room').value;
-        if(user && room) {
-            document.getElementById('setup').style.display = 'none';
-            document.getElementById('game-ui').style.display = 'flex';
-            socket.emit('join', {username: user, room: room});
-        }
-    }
-
-    function enviar(manual, isReroll = false) {
-        let input = document.getElementById('cmd');
-        let val = manual || input.value;
-        if(!val) return;
-        socket.emit('send_command', {username: user, room: room, msg: val, is_reroll: isReroll});
-        if(!manual) input.value = '';
-    }
-
-    function vRoll(lados) {
-        const box = document.getElementById('v-box');
-        const qtd = document.getElementById('v-qtd').value || 1;
-        const bonus = document.getElementById('v-bonus').value || 0;
-        box.classList.add('rolling');
-        let c = 0;
-        let anim = setInterval(() => {
-            document.getElementById('v-total').innerText = Math.floor(Math.random() * (lados * qtd)) + 1;
-            if(c++ > 8) {
-                clearInterval(anim);
-                box.classList.remove('rolling');
-                enviar(`${qtd}d${lados}${bonus >= 0 ? '+' : ''}${bonus}`);
-            }
-        }, 50);
-    }
-
-    socket.on('new_roll', function(data) {
-        const color = getPColor(data.user);
-        if(data.user === user) {
-            document.getElementById('v-total').innerText = data.repeticoes[0].total;
-            document.getElementById('v-details').innerText = data.repeticoes[0].detalhe;
-        }
-        let html = `<div class="roll-block">
-            <button class="reroll-btn" onclick="enviar('${data.comando_puro}', true)">RE-ROLAR</button>
-            <div style="margin-bottom:8px">
-                <strong style="color:${color}">${data.user}</strong> <span style="color:#555; font-size:0.8rem">// ${data.comentario}</span>
-            </div>`;
-        data.repeticoes.forEach(r => {
-            let highlight = r.is_max ? 'crit-glow' : (r.is_min ? 'fail-glow' : '');
-            html += `<div style="display:flex; align-items:center; gap:15px">
-                <span class="total-val ${highlight}">${r.total}</span>
-                <span style="color:#8b949e; font-size:0.8rem">🎲 ${r.detalhe} (d${r.lados})</span>
-            </div>`;
-        });
-        const log = document.getElementById('log');
-        log.innerHTML += html + `</div>`;
-        log.scrollTop = log.scrollHeight;
-    });
-
-    socket.on('sync_init', function(data) {
-        const list = document.getElementById('initiative-list');
-        list.innerHTML = "";
-        data.lista.forEach((item, idx) => {
-            const active = (idx === data.turno) ? "active" : "";
-            list.innerHTML += `<li class="init-item ${active}">
-                <span style="color:${getPColor(item.user_origem)}; font-weight:bold">${item.entidade}</span>
-                <div style="display:flex; align-items:center; gap:8px">
-                    <input type="number" value="${item.valor}" 
-                           class="init-edit-input" 
-                           onchange="updateManualInit('${item.entidade}', this.value)">
-                    <span style="cursor:pointer; color:#444;" onclick="socket.emit('delete_single_init',{room:room,entidade:'${item.entidade}'})">✕</span>
-                </div>
-            </li>`;
-        });
-    });
-
-    function updateManualInit(entidade, novoValor) {
-        socket.emit('update_init_value', {room: room, entidade: entidade, valor: novoValor});
-    }
-
-    socket.on('new_message', function(data) {
-        document.getElementById('log').innerHTML += `<div style="padding:5px"><strong style="color:${getPColor(data.user)}">${data.user}:</strong> <span>${data.msg}</span></div>`;
-        document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
-    });
-
-    socket.on('status', function(data) {
-        document.getElementById('log').innerHTML += `<div style="color:#484f58; text-align:center; font-size:0.75rem; margin:10px 0;">${data.msg}</div>`;
-    });
-</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
